@@ -3,6 +3,8 @@ package com.microservice.orderservice.service;
 import com.microservice.orderservice.dto.InventoryResponse;
 import com.microservice.orderservice.dto.OrderLineItemsDto;
 import com.microservice.orderservice.dto.OrderRequest;
+import com.microservice.orderservice.feignClient.InventoryFeignClient;
+import com.microservice.orderservice.mapper.OrderMapper;
 import com.microservice.orderservice.model.Order;
 import com.microservice.orderservice.model.OrderLineItems;
 import com.microservice.orderservice.repository.OrderRepository;
@@ -24,6 +26,9 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final WebClient webClient;
+    private final OrderMapper orderMapper;
+
+    private final InventoryFeignClient inventoryFeignClient;
 
     public void placeOrder(OrderRequest orderRequest){
         Order order = new Order();
@@ -53,6 +58,23 @@ public class OrderService {
             throw new IllegalArgumentException("product is not stock, please try again later");
         }
     }
+    public void createOrderWhitFeignClient(OrderRequest orderRequest) {
+        Order order = new Order();
+        order.setOrderNumber(UUID.randomUUID().toString());
+        List<OrderLineItems> orderLineItems = orderMapper.entityListToDto(orderRequest.getOrderLineItemsDtoList());
+        order.setOrderLineItemsList(orderLineItems);
+
+        List<String> skuCodes = order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getSkuCode)
+                .collect(Collectors.toList());
+        List<InventoryResponse> responses = inventoryFeignClient.isInStock(skuCodes);
+        boolean allProductsInStock = responses.stream().allMatch(InventoryResponse::isInStock);
+        if(allProductsInStock) {
+            orderRepository.save(order);
+        }else {
+            throw new IllegalArgumentException("product is not stock, please try again later");
+        }
+    }
 
     private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
         OrderLineItems orderLineItems = new OrderLineItems();
@@ -61,5 +83,6 @@ public class OrderService {
         orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
         return orderLineItems;
     }
+
 
 }

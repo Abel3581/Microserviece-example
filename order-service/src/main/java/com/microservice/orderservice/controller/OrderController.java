@@ -20,4 +20,11 @@ public class OrderController {
         orderService.placeOrder(orderRequest);
         return "order create";
     }
+    //Con FeignClient
+    @PostMapping("/feignClient")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createOrderWhitFeignClient(@RequestBody OrderRequest orderRequest){
+        orderService.createOrderWhitFeignClient(orderRequest);
+        return "Order Create";
+    }
 }
