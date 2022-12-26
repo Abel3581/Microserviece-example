@@ -1,5 +1,6 @@
 com\microservice\orderservice\dto\OrderLineItemsDto.class
 com\microservice\orderservice\model\OrderLineItems.class
+com\microservice\orderservice\config\WebClient.class
 com\microservice\orderservice\OrderServiceApplication.class
 com\microservice\orderservice\controller\OrderController.class
 com\microservice\orderservice\model\Order.class
