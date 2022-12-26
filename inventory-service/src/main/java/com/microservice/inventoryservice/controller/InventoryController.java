@@ -22,4 +22,6 @@ public class InventoryController {
        return inventoryService.isInStock(skuCode);
 
     }
+
+
 }
