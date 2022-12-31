@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     private final OrderMapper orderMapper;
 
     private final InventoryFeignClient inventoryFeignClient;
@@ -45,8 +45,8 @@ public class OrderService {
 
         //Llamo al servicio inventory y genero orden si hay stock
 
-        InventoryResponse[] inventoryResponse = webClient.get()
-                .uri("http://localhost:8082/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
+        InventoryResponse[] inventoryResponse = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
                         .retrieve()
                                 .bodyToMono(InventoryResponse[].class)
                                         .block();

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
-@FeignClient(value = "inventory-service",url = "http://localhost:8082/api/inventory")
+@FeignClient(value = "inventory-services",url = "http://inventory-service/api/inventory")
 public interface InventoryFeignClient {
 
     @GetMapping
